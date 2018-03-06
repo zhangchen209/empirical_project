@@ -1,6 +1,6 @@
-function [y x] = dgp(n,beta,seed)
+function [y x] = dgp(n,beta)
 
-rng(seed);
+rng('default');
 
 mu = [0;0;0];
 sigma = eye(3);
