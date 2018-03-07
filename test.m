@@ -1,14 +1,16 @@
 clear
 
-n = 1000;
 beta = [-6;3;3;3];
-mu = [0;0;0];
-sigma = eye(3);
-x = mvnrnd(mu,sigma,n);
-x = [ones(n,1) x];
-u = normrnd(0,1,[n,1]);
-u = x(:,2).^2.*u;
+n = 5000;
+[y x] = dgp(n,beta);
 
-y_star = x*beta +u;
+t = -12:0.1:-0.1;
+tt = [t;3*ones(3,120)];
 
-y = max(0,y_star);
+L = zeros(12,1);
+
+for i = 1:120
+    L(i) = exp(n*obj(y,x,tt(:,i)));
+    K(i) = obj(y,x,tt(:,i));
+end
+plot(t,K)

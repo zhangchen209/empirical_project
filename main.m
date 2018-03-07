@@ -1,21 +1,21 @@
 clear, clc;
 
 
-
 beta = [-6;3;3;3];
-n = 400;
+n = 5000;
 
 [y x] = dgp(n,beta);
 
 
 %% MCMC
 
-B = 10000;
+B = 5000;
 theta = zeros(4,B);
 theta(:,1) = (x'*x)\x'*y;
-sigma_e = 0.5*eye(4);
+sigma_e = 5*eye(4);
 
-post = @(t) exp(n*obj(y,x,t));
+
+post = @(t) exp(n*obj(y,x,t))*mvnpdf(t,6*ones(4,1),eye(4));
 
 
 for i = 1:B-1
