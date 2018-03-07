@@ -1,7 +1,7 @@
-function [y x] = dgp(n,beta)
+clear
 
-rng('default');
-
+n = 1000;
+beta = [-6;3;3;3];
 mu = [0;0;0];
 sigma = eye(3);
 x = mvnrnd(mu,sigma,n);
