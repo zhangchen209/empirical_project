@@ -2,10 +2,11 @@ clear, clc;
 
 
 beta = [-6;3;3;3];
-tau = 0.3;
+tau = 0.5;
+y_c = 0;
 d = length(beta);
 n = 400;
-R = 100;
+R = 50;
 seed = randseed(133,R);
 
 % generate data
@@ -14,27 +15,30 @@ x = zeros(n,d,R);
 for i=1:R
     [y(:,i) x(:,:,i)] = dgp(n,beta,seed(i));
 end
-
+% ols initial value
+initval = zeros(4,R);
+for i=1:R
+    initval(:,i) = (x(:,:,i)'*x(:,:,i))\x(:,:,i)'*y(:,i);
+end
 
 %% LTE method
-% prior
-prmax = [4;13;13;13];
-prmin = [-16;-7;-7;-7];
+% uniform prior
+prmax = [beta(1)+10;beta(2)+10;beta(3)+10;beta(4)+10];
+prmin = [beta(1)-10;beta(2)-10;beta(3)-10;beta(4)-10];
 
 % MCMC run
 burnin = 10000;
 keep = 10000;
 r = 1;
 theta_1 = zeros(keep,4,R);
-iaccept = zeros(r,1);
+accept = zeros(r,1);
 theta1_mean = zeros(R,4);
 theta_lte = zeros(R,4);
 tic
 while r<=R
     r
-    initval = (x(:,:,r)'*x(:,:,r))\x(:,:,r)'*y(:,r);
-    [theta_1(:,:,r) iaccept(r)] = mcmc_run(burnin,keep,y(:,r),x(:,:,r),initval, ...
-                                      tau,seed(r));
+    [theta_1(:,:,r) accept(r)] = mcmc_run(burnin,keep,y(:,r),x(:,:,r), ...
+                                      initval(:,r),tau,seed(r));
     theta1_mean(r,:) = mean(theta_1(:,:,r));
     lte_q = @(xi) lte_obj(xi,y(:,r),x(:,:,r),theta_1(:,:,r)');
     theta_lte(r,:) = fminsearch(lte_q,theta1_mean(r,:)');
@@ -42,34 +46,45 @@ while r<=R
 end
 
 elapsed_lte = toc;
-accept = iaccept/keep;
+% accept = mean(iaccept)/(4*keep);
 MSE_lte = var(theta_lte)+(mean(theta_lte)-beta').^2;
 RMSE_lte = sqrt(MSE_lte);
 MAD_lte = mad(theta_lte);
-median_bias_rq = median(theta_lte) - beta';
+median_bias_lte = median(theta_lte) - beta';
 
-
+f1 = figure;
+edge = [linspace(beta(1)-3,beta(1)+3,60); ...
+    linspace(beta(2)-3,beta(2)+3,60); ...
+    linspace(beta(3)-3,beta(3)+3,60); ...
+    linspace(beta(4)-3,beta(4)+3,60)];
 for i=1:4
     subplot(2,2,i);
-    axis([prmin(i) prmax(i) 0 0.5*R]);
-    histogram(theta_lte(:,i),50);
+    histogram(theta_lte(:,i),edge(i,:));
 end
 
 
-%% Linear Programming
+%% Iterative Linear Programming
 p = 1;
-theta_lp = zeros(R,4);
+theta_ilp = zeros(R,4);
+localmin = 0;
 tic
 while p<=R
     p
-    theta_lp(p,:) = rq(x(:,:,p),y(:,p),tau);
+    [theta_ilp(p,:) lm] = cqr_ilp(x(:,:,p),y(:,p),y_c,tau,initval(:,p));
+    localmin = localmin +lm;
     p = p+1;
 end
-elapsed_lp = toc;
-MSE_lp = var(theta_lp)+(mean(theta_lp)-beta').^2;
-RMSE_lp = sqrt(MSE_lp);
-MAD_lp = mad(theta_lp);
-median_bias_lp = median(theta_lp) - beta';
+
+f2 = figure;
+for i=1:4
+    subplot(2,2,i);
+    histogram(theta_ilp(:,i),edge(i,:));
+end
+elapsed_ilp = toc;
+MSE_ilp = var(theta_ilp)+(mean(theta_ilp)-beta').^2;
+RMSE_ilp = sqrt(MSE_ilp);
+MAD_ilp = mad(theta_ilp);
+median_bias_ilp = median(theta_ilp) - beta';
 
 save theta;
     
