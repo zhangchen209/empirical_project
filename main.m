@@ -112,7 +112,7 @@ for i=1:4
     histogram(ilp_exzero(:,i),nbins);
 end
 
-% ilp estimates excluded local convergence to 0 -------------
+% ilp estimates ---------------------------------------------
 MSE_ilp_all = var(ilp_est)+(mean(ilp_est)-beta').^2;
 RMSE_ilp_all = sqrt(MSE_ilp_all);
 MAD_ilp_all = mad(ilp_est);
