@@ -1,0 +1,503 @@
+
+\usepackage{ifthen}
+\usepackage{amsmath}
+\usepackage{pst-all}
+\usepackage{fullpage}
+\usepackage{framed}
+\usepackage{environ}
+
+%\setlength{\parsep}{3cm}
+
+
+
+% fix lengths for displayed math.
+\makeatletter
+\g@addto@macro\normalsize{\setlength\abovedisplayskip{0pt plus 2pt}}
+\g@addto@macro\normalsize{\setlength\belowdisplayskip{0pt plus 2pt}}
+\g@addto@macro\normalsize{\setlength\abovedisplayshortskip{0pt plus 2pt}}
+\g@addto@macro\normalsize{\setlength\belowdisplayshortskip{0pt plus 2pt}}
+\makeatother
+
+% set lengths
+\setlength{\parindent}{0ex}
+\setlength{\parskip}{2ex plus 0ex minus 1ex}
+
+
+
+
+
+
+\newcommand{\forloop}[5][1]%
+{%
+\setcounter{#2}{#3}%
+\ifthenelse{#4}%
+	{%
+	#5%
+	\addtocounter{#2}{#1}%
+	\forloop[#1]{#2}{\value{#2}}{#4}{#5}%
+	}%
+% Else
+	{%
+	}%
+}%
+
+
+
+\psset{levelsep=1cm}
+
+%%
+%% binary trees
+%%
+\newcommand{\binnode}[1]{\ifthenelse{\equal{null}{#1}}{\Tn}{\Tcircle{#1}}}
+\newcommand{\bintree}[3]{\pstree{\Tcircle{#1}}{{#2}{#3}}}
+\newcommand{\lefttree}[2]{\bintree{#1}{#2}{\binnode{null}}}
+\newcommand{\righttree}[2]{\bintree{#1}{\binnode{null}}{#2}}
+\newcommand{\subtree}[1]{\Ttri{#1}}
+
+%%
+%% possibly null subtree 
+%%
+
+\DeclareRobustCommand{\tree}[2]{\ifthenelse{\equal{#2}{}}{\Tcircle{#1}}{\pstree{\Tcircle{#1}}{#2}}}
+
+%\DeclareRobustCommand{\rightleaning}[2]{\ifthenelse{\equal{#2}{}}{#1}{#1#2}}
+
+%%%
+%%% binomial heap
+%%%
+
+%%
+%% all trees take an extra argument that attaches a subtree to the root.
+%%
+\newcommand{\binomialmerge}[3]% binomial heap builder: #1 = smaller-heap; #2 = larger-heap; #3 = more children of root.
+{#1{#2#3}}
+
+%%
+%%
+%%
+\newcommand{\BHx}[2]% binomial heap builder 1: #1 = key of root; #2 = more children of root
+{\tree{#1}{#2}}
+
+\newcommand{\BHxx}[3]{\binomialmerge{\BHx{#1}}{\BHx{#2}{}}{#3}}
+\newcommand{\BHxxxx}[5]{\binomialmerge{\BHxx{#1}{#2}}{\BHxx{#3}{#4}{}}{#5}}
+\newcommand{\BHxxxxxxxx}[9]{\binomialmerge{\BHxxxx{#1}{#2}{#3}{#4}}{\BHxxxx{#5}{#6}{#7}{#8}{}}{#9}}
+
+%\newcommand{\BHxx}[3]{\BHx{#1}{{\BHx{#2}{}}{#3}}}
+%\newcommand{\BHxxxx}[5]{\BHxx{#1}{#2}{{\BHxx{#3}{#4}{}}{#5}}}
+%\newcommand{\BHxxxxxxxx}[9]{\BHxxxx{#1}{#2}{#3}{#4}{{\BHxxxx{#5}{#6}{#7}{#8}{}}{#9}}}
+
+
+%%
+%% linked lists
+%%
+\newcommand{\nodetemplate}[2]{%
+\begin{tabular}{|c|c|}
+\hline
+#1 & #2 \\ \hline
+\end{tabular}}
+
+%%
+%% #1 node value
+%% #2 node label
+%%
+\newcommand{\llnode}[2]{\rnode{#2}{\nodetemplate{#1}{\rnode{#2next}{$\bullet$}}}}
+
+%%
+%% #1 node value
+%% #2 node label
+%%
+\newcommand{\nullnode}[2]{%
+\rnode{#2}{\nodetemplate{#1}{$/$}}%
+}
+
+%%
+%% #1 node label
+%% #2 node label
+%%
+\newcommand{\link}[2]{\ncline{->}{#1next}{#2}}
+
+
+\newcommand{\linkednode}[3]{%
+\rnode{#2}{\llnode{#1}{\rnode{#2next}{$\bullet$}}}%
+\link{#2}{#3}%
+}
+
+
+%%
+%% arrays
+%%
+\newcommand{\placeat}[2]{\nput{u}{#1}{#2}}
+
+\newcommand{\ith}[3][\arabic{arrayfigure}]{\placeat{array#1i#2}{#3}}
+
+\newcommand{\arraycelli}[2]% #1 = array-name; #2 = index
+{\begin{pspicture}(0,0)(1,2){\psframe(0,0)(1,1)}\uput[u](0.5,1){#2}\pnode(0.5,.1){array#1i#2}\end{pspicture}}%
+
+%%
+%% #1 minimum index
+%% #2 maximum index
+%% #3 space for each entry
+%%
+\newcounter{arrayfigure}
+\newcounter{arrayfigurei}
+\setcounter{arrayfigure}{0}
+\newenvironment{arrayfigure}[3]{%
+\psset{yunit=4ex,xunit=#3}%
+\forloop{arrayfigurei}{#1}{\not\(\value{arrayfigurei} > #2\)}%
+{\arraycelli{\arabic{arrayfigure}}{\arabic{arrayfigurei}}}%
+}{}
+
+
+
+
+\newcommand{\false}{\equal{1}{2}}
+\newcommand{\true}{\equal{1}{1}}
+
+%%
+%% notes formatting
+%%
+
+\newcommand{\CITE}[1]{{[#1]}}
+
+\newcommand{\ifnocomments}[1]{}
+\newcommand{\ifcomments}[1]{}
+\newcommand{\minicomment}[2]{}
+\newcommand{\comment}[1]{}
+\NewEnviron{C}{}
+
+\newlength{\commentwidth}
+\setlength{\commentwidth}{\columnwidth}
+\addtolength{\commentwidth}{-4ex}
+
+
+\newcommand{\showcomments}{%
+\renewcommand{\ifnocomments}[1]{}
+\renewcommand{\ifcomments}[1]{{##1}}
+\renewcommand{\minicomment}[2][]{##1{\red $\left[\left[\text{{\it{##2}}}\right]\right]$}}
+\renewcommand{\comment}[1]{\begin{C}##1\end{C}}
+\RenewEnviron{C}{\red\begin{leftbar}\BODY\end{leftbar}}
+}
+
+\newcommand{\hidecomments}{%
+\RenewEnviron{C}{}
+\renewcommand{\ifnocomments}[1]{{##1}}
+\renewcommand{\minicomment}[2][]{}
+\renewcommand{\comment}[1]{}
+\renewcommand{\ifcomments}[1]{}
+}
+
+
+
+
+\showcomments
+
+
+\newcommand{\noterule}{\hrule}
+
+\newcommand{\notespace}{\vspace{1cm}}
+\newcommand{\notesmallspace}{\vspace{.5cm}}
+
+\newcommand{\Xcomment}[1]{}
+
+\newcommand{\h}[1]{\section*{#1}}
+\newcommand{\hh}[1]{\subsection*{#1}}
+\newcommand{\hhh}[1]{\subsubsection*{#1}}
+
+
+\newcommand{\notelike}[2][]{{\bf #2\ifthenelse{\equal{#1}{}}{}{ #1}: }}
+
+\newcommand{\newnote}[2]{\newcommand{#1}[1][]{{\bf #2\ifthenelse{\equal{##1}{}}{}{ ##1}: }}}
+
+\newnote{\announce}{Announcements}
+\newnote{\claim}{Claim}
+\newnote{\defn}{Def}
+\newnote{\q}{Question}
+\newnote{\oq}{Open Question}
+\newnote{\qs}{Questions}
+\newnote{\note}{Note}
+\newnote{\goal}{Goal}
+\newnote{\result}{Result}
+\newnote{\idea}{Idea}
+\newnote{\recall}{Recall}
+\newnote{\soln}{Solution}
+\newnote{\obs}{Observation}
+\newnote{\ans}{Answer}
+\newnote{\challenge}{Challenge}
+\newnote{\example}{Example}
+%\newnote{\alg}{Algorithm}
+\newnote{\fact}{Fact}
+\newnote{\reading}{Reading}
+\newnote{\miniproof}{Proof}
+\newnote{\story}{Story}
+\newnote{\thm}{Theorem}
+\newnote{\cor}{Corollary}
+\newnote{\lem}{Lemma}
+\newnote{\prop}{Prop}
+\newnote{\examples}{Examples}
+\newnote{\pf}{Proof}
+\newnote{\pfsketch}{Proof Sketch}
+%\newnote{\solution}{Solution}
+\newnote{\assume}{Assumption}
+\newnote{\conc}{Conclusion}
+\newnote{\conj}{Conjecture}
+\newnote{\step}{Step}
+
+
+\newcommand{\then}{$\Rightarrow$}
+\renewcommand{\QED}{{\bf QED}}
+\newcommand{\contradiction}{$\rightarrow\leftarrow$}
+
+
+
+
+
+
+\newcommand{\hr}{\rule{\columnwidth}{.5pt}}
+
+\newcommand{\thecoursenumber}{EECS~\#\#\#}
+\newcommand{\thecoursename}{Course Name}
+\newcommand{\thelecture}{\#}
+\newcommand{\thetopic}{Topic}
+\newcommand{\thesubtopics}{Subtopics}
+\newcommand{\coursename}[1]{\renewcommand{\thecoursename}{#1}}
+\newcommand{\coursenumber}[1]{\renewcommand{\thecoursenumber}{#1}}
+\newcommand{\lecturenumber}[1]{\renewcommand{\thelecture}{#1}}
+\newcommand{\lecturetopic}[1]{\renewcommand{\thetopic}{#1}}
+\newcommand{\lecturesubtopics}[1]{\renewcommand{\thesubtopics}{#1}}
+
+\newcommand{\makelecturetitle}{%
+\author{}
+\date{}
+\title{\noindent\fbox{\parbox{6.4in}{
+\bf \large \thecoursenumber: \thecoursename
+        \hfill Lecture \thelecture\\
+\thetopic \hfill \rm\small\thesubtopics}}}
+\maketitle}
+
+
+
+
+\newcommand{\newzerocounter}[2][0]{\newcounter{#2}\setcounter{#2}{#1}}
+
+
+\newenvironment{notelist}
+{\begin{list}{}{\setlength{\parsep}{\parskip}\setlength{\topsep}{0in}\setlength{\rightmargin}{0in}\setlength{\itemsep}{0in}}}
+{\end{list}}
+
+\newzerocounter{notesnumber}
+
+\newcounter{notesimbalance}
+
+\newif\ifsuspendimbalance
+\suspendimbalancefalse
+
+
+\newcommand{\printincrement}[2]{{#1{#2}}\addtocounter{#2}{1}}
+
+%
+% plain
+%
+\newcommand{\itemorig}{\item}
+\newcommand{\itemnote}{\fiximbalance\suspendimbalancefalse\itemorig}
+\newcommand{\itemout}{\itemnote\hspace{-.5\labelwidth}\hspace{-.5\labelsep}}
+
+%
+% bullets and impications
+%
+\newcommand{\itembull}{\itemnote[$\bullet$]}
+\newcommand{\itemimpl}{\itemnote[$\Rightarrow$]}
+
+%
+% numbers.
+%
+\newcommand{\itemnumber}{\itemnote[\notecounter{\compose{\periodafter}{\arabic}}]}
+\newcommand{\itemroman}{\itemnote[\notecounter{\compose{\parens}{\roman}}]}
+\newcommand{\itemRoman}{\itemnote[\notecounter{\compose{\periodafter}{\Roman}}]}
+\newcommand{\itemalpha}{\itemnote[\notecounter{\compose{\parens}{\alph}}]}
+
+%
+% 
+%
+
+\newcommand{\notecounter}[1]{\printincrement{#1}{notes\arabic{notesnumber}-\roman{noteslevel\arabic{notesnumber}}}}
+
+\newcommand{\notecounterreset}[1][1]{\setcounter{notes\arabic{notesnumber}-\roman{noteslevel\arabic{notesnumber}}}{#1}}
+
+
+\newcommand{\fiximbalance}{\ifsuspendimbalance\relax\else\recursivefiximbalance\fi}
+\newcommand{\recursivefiximbalance}{\ifnum\value{notesimbalance}=0\relax\else
+\endnotelist\addtocounter{notesimbalance}{-1}\recursivefiximbalance
+\fi}
+
+\newcommand{\closenote}{\addtocounter{notesimbalance}{\value{noteslevel\arabic{notesnumber}}}\setcounter{noteslevel\arabic{notesnumber}}{0}\fiximbalance}
+
+\newcommand{\notein}{\fiximbalance\addtocounter{noteslevel\arabic{notesnumber}}{1}\notelist}
+\newcommand{\noteout}{\fiximbalance\endnotelist\addtocounter{noteslevel\arabic{notesnumber}}{-1}}
+\newcommand{\notequickin}{\fiximbalance\addtocounter{notesimbalance}{1}\suspendimbalancetrue\notelist}
+
+
+\newenvironment{notes}
+{\newzerocounter{noteslevel\arabic{notesnumber}}%
+\setcounter{notesimbalance}{0}%
+\newzerocounter[1]{notes\arabic{notesnumber}-i}%
+\newzerocounter[1]{notes\arabic{notesnumber}-ii}%
+\newzerocounter[1]{notes\arabic{notesnumber}-iii}%
+\newzerocounter[1]{notes\arabic{notesnumber}-iv}%
+\let\itemorig\item%
+\def\item{\itemnote}%
+\def\+{\notein}%
+\def\-{\noteout}%
+\def\>{\notequickin}%
+\def\o{\itembull}%
+\def\so{\itemimpl}%
+\def\LEQ{\item[$\leq$]}
+\def\GEQ{\item[$\geq$]}
+\def\eq{\item[$=$]}%
+\def\EQ{\item[$=$]}%
+\def\i{\itemroman}%
+\def\a{\itemalpha}%
+\def\n{\itemnumber}%
+\def\I{\itemRoman}
+\def\<{\itemout}%
+\def\tab{\hspace{3ex}}%
+\def\reset{\notecounterreset}%
+\def\`{\item\hfill}%
+}
+{\closenote\addtocounter{notesnumber}{1}}
+
+
+
+
+
+
+
+\newcounter{notablelevel}
+\newcounter{notablei}
+\newcounter{notableii}
+\newcounter{notableiii}
+\newcounter{notableiv}
+
+\newcommand{\nota}[1]{#1\'}
+\newcommand{\makenota}[2]{\newcommand{#1}{\nota{#2}}}
+\newcommand{\noter}[1]{{#1{notable\roman{notablelevel}}}\addtocounter{notable\roman{notablelevel}}{1}}
+\newcommand{\noterclear}[1][1]{\setcounter{notable\roman{notablelevel}}{#1}}
+\newcommand{\notableintmp}{\+}
+\newcommand{\notableouttmp}{\-}
+\newcommand{\notablein}{\notableintmp\addtocounter{notablelevel}{1} a}
+\newcommand{\notableout}{\notableouttmp\addtocounter{notablelevel}{-1} b}
+\makenota{\notabull}{$\bullet$}
+\makenota{\notaimpl}{$\Rightarrow$}
+\makenota{\notanumb}{\noter{\compose\periodafter\arabic}}
+\makenota{\notaroma}{\noter{\compose\parens\roman}}
+\makenota{\notaRoma}{\noter{\compose\periodafter\Roman}}
+\makenota{\notalpha}{\noter{\compose\parens\alph}}
+
+
+
+\newenvironment{notable}%
+{\def\o{\notabull}%
+\def\so{\notaimpl}%
+\def\a{\notalpha}%
+\def\i{\notaroma}%
+\def\n{\notanumb}%
+\def\I{\notaRoma}%
+\setcounter{notablelevel}{1}%
+\setcounter{notablei}{1}%
+\setcounter{notableii}{1}%
+\setcounter{notableiii}{1}%
+\linespread{1.6}%
+\begin{tabbing}%
+\let\notableintmp\+%
+\let\notableouttmp\-%
+\def\+{\notablein}%
+\def\-{\notableout}%
+XXX\=XXX\=XXX\=XXX\=XXX\=XXX\=\kill%
+}%
+{\end{tabbing}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newlength{\quickinsep}
+\newlength{\quicklabelsep}
+\newlength{\quicksep}
+\setlength{\quicksep}{.1cm}
+\setlength{\quickinsep}{5ex}
+\setlength{\quicklabelsep}{4ex}
+\newcommand{\quickinbox}{\makebox[\quickinsep]{}}
+\newcommand{\quickin}[1][1]{\addtocounter{quicklevel}{#1}}
+\newcommand{\quickout}[1][1]{\addtocounter{quicklevel}{-#1}}
+\newcommand{\quickallout}{\setcounter{quicklevel}{0}}
+\newcommand{\quick}[1][]{\\[\quicksep]\makebox[0in]{\hspace{-1cm}\arabic{quicklevel}}\forloop{quicktmp}{0}{\value{quicktmp} < \value{quicklevel}}{\>}\makebox[0in]{\hspace{-\quicklabelsep}#1}}
+\newcommand{\newquickie}[2]{\newcommand{#1}{\quick[#2]}}
+\newquickie{\bull}{$\bullet$}
+\newquickie{\impl}{$\Rightarrow$}
+\newcommand{\quicklevel}[1][\arabic]{{#1{quickcount\roman{quicklevel}}\addtocounter{quickcount\roman{quicklevel}}{1}}}
+\newcommand{\quicknumb}[1][\compose\periodafter\arabic]{\quick[{\quicklevel[#1]}]}
+\newcommand{\newquicknumb}[2]{\newcommand{#1}{\quicknumb[#2]}}
+\newquicknumb{\quickalph}{\compose\parens\alph}
+\newquicknumb{\quickroma}{\compose\parens\roman}
+\newquicknumb{\quickRoma}{\compose\periodafter\Roman}
+\newcommand{\num}{\bull}
+\newcommand{\periodafter}[1]{#1.}
+\newcommand{\parens}[1]{(#1)}
+
+\newcommand{\compose}[3]{#1{#2{#3}}}
+
+
+\newcommand{\renumb}{\setcounter{quickcount\roman{quicklevel}}{0}}
+
+\newcounter{quicktmp}
+\newcounter{quicklevel}
+\newcounter{quickcounti}
+\newcounter{quickcountii}
+\newcounter{quickcountiii}
+\newcounter{quickcountiv}
+
+
+\newenvironment{quickie}
+{%
+\newcommand{\In}{\quickin}%
+\newcommand{\Out}{\quickout}%
+\newcommand{\Q}{\quick}%
+\renewcommand{\a}{\quickalph}%
+\renewcommand{\i}{\quickroma}%
+\newcommand{\I}{\quickRoma}%
+\newcommand{\n}{\quicknumb}%
+\renewcommand{\o}{\bull}%
+\begin{tabbing}%
+\setcounter{quicklevel}{0}%
+\setcounter{quickcounti}{1}%
+\setcounter{quickcountii}{1}%
+\setcounter{quickcountiii}{1}%
+\setcounter{quickcountiv}{1}%
+\quickinbox\=\quickinbox\=\quickinbox\=\quickinbox\=\quickinbox\=\kill%
+}
+{\end{tabbing}}
+
+
+
+\newcounter{labelitcounter}
+\setcounter{labelitcounter}{0}
+
+%\newcommand{\labelitdecode}[1]{4,4}
+
+\newcommand{\labelitsetwhere}[1]{%
+\ifthenelse{\equal{ur}{#1}}{\renewcommand{\labelitwhere}{4,4}}{}%
+\ifthenelse{\equal{dr}{#1}}{\renewcommand{\labelitwhere}{4,-3}}{}%
+\ifthenelse{\equal{ul}{#1}}{\renewcommand{\labelitwhere}{-4,4}}{}%
+\ifthenelse{\equal{dl}{#1}}{\renewcommand{\labelitwhere}{-4,-3}}{}%
+}
+
+\newcommand{\labelitwhere}{4,4}
+
+\newcommand{\labelit}[3][ur]{\labelitsetwhere{#1}{\psset{unit=1ex}\addtocounter{labelitcounter}{1}\rnode{labelitA\roman{labelitcounter}}{#2}\rput(\labelitwhere){\rnode{labelitB\roman{labelitcounter}}{#3}}\ncline{->}{labelitB\roman{labelitcounter}}{labelitA\roman{labelitcounter}}}}

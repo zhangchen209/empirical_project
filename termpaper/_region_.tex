@@ -1,0 +1,38 @@
+\message{ !name(empirical_porject.tex)}\documentclass[12pt]{article}
+
+\renewcommand{\baselinestretch}{1.05}
+\usepackage{amsmath,amsthm,verbatim,amssymb,amsfonts,amscd, graphicx}
+\usepackage{graphics}
+\topmargin0.0cm
+\headheight0.0cm
+\headsep0.0cm
+\oddsidemargin0.0cm
+\textheight23.0cm
+\textwidth16.5cm
+\footskip1.0cm
+\theoremstyle{plain} \newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary} \newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem*{surfacecor}{Corollary 1}
+\newtheorem{conjecture}{Conjecture} \newtheorem{question}{Question}
+\theoremstyle{definition} \newtheorem{definition}{Definition}
+\usepackage{mathtools} \usepackage{commath}
+\usepackage{bbm}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+
+
+
+\begin{document}
+
+\message{ !name(empirical_porject.tex) !offset(80) }
+\begin{align*}
+  Y_1 = & X\beta_1 +u_1, \\
+  Y_2 = & X\beta_2 +u_2, \\
+  \left( \begin{array}{c} u_1 \\ u_2 \end{array} \right)& \sim  N(0,X_2^2I_2), \\
+  Y^1 \mbox{ is}& \mbox{ observed when } Y^1> Y^2.
+\end{align*}
+\message{ !name(empirical_porject.tex) !offset(82) }
+
+\end{document}

@@ -1,0 +1,181 @@
+%%
+%% Jason's preamble.
+%%
+
+%
+% Need these packages... 
+%
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amstext}
+\usepackage{amsfonts}
+\usepackage{amsopn}
+
+
+\usepackage{ifthen}
+
+%
+% Theorem like environments.
+%
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{definition}{Definition}[section]
+%\newtheorem{example}{Example}[section]
+\newtheorem{remark}{Remark}[section]
+
+%
+% Don't use this, `proof' and `proofby' redefine this env
+% to allow you to specify a proof with a different type of 
+% enclosing environment for the proof body.
+%
+\newenvironment{ProofDummyEnv}{}{}
+
+%
+% This is an environment that does nothing.  You could use this
+% for a proof if you did not want an enclosing environment.
+%
+\newenvironment{none}{}{}
+
+%
+%\begin{proof}[env] proof body \end{proof}
+%   
+%   env -- the base environment to do the proof.  Can be `itemize',
+%          `enumerate', etc.  The default is `quote'
+%   proof body -- the actuall proof.
+%
+\newenvironment{proof}[1][none]{\begin{proofby}[#1]{}}{\end{proofby}}
+
+%
+%\begin{proofby}[env]{method} proof body \end{proof}
+%
+%   env -- the base environment to do the proof.  Can be `itemize',
+%          `enumerate', etc.  The default is `quote'
+%   method -- could be some text like ``by induction on $n$''
+%   proof body -- the actuall proof.
+%
+\newenvironment{proofby}[2][none]{\vskip\belowdisplayskip\par\noindent{\bf Proof:} #2
+\renewenvironment{ProofDummyEnv}{\begin{#1}}{\end{#1}}%
+\begin{ProofDummyEnv}}%
+{\QED\vskip\belowdisplayskip\end{ProofDummyEnv}}
+
+%
+% often used in proofs.
+%
+\newcommand{\ih}{inductive hypothesis}
+
+
+%
+% BlackBoardBold symbols.
+%
+\newcommand{\integers}{\mathbb Z}
+\newcommand{\reals}{\mathbb R}
+\newcommand{\complex}{\mathbb C}
+\newcommand{\rationals}{\mathbb Q}
+\newcommand{\naturals}{\mathbb N}
+\newcommand{\F}{\mathbb F}
+
+
+%
+% this doesn't really work.
+%
+\newcommand*{\ubar}[1]{\ensuremath{\underline{#1}}}
+
+
+
+%
+% This adds the cute little box at the end of a proof.
+% the proof and proofby environment automatically do this.
+%
+\newcommand{\QED}{\nopagebreak\hfill $\Box$}
+
+%
+% For referencing equations, lemmas, theorems etc.
+%
+\newcommand{\lref}[1]{Lemma~\ref{#1}}
+\newcommand{\eqnref}[1]{Equation~\ref{#1}}
+\newcommand{\thmref}[1]{Theorem~\ref{#1}}
+
+
+%
+% these are for text.  some people like to write iff or WLOG, so
+% we will provide functions.  Remempler to use them like this:
+% ``yadda yadda X \IFF\ Y yadda''
+% or
+% ``yadda \WLOG, yadda''
+%
+\newcommand{\IFF}{if and only if}
+\newcommand{\WLOG}{without loss of generality}
+
+% isomorphic to: this is =~
+\newcommand{\iso}{\cong}
+
+\newcommand{\defeq}{\stackrel{\mathrm{\small def}}{=}}
+
+% derivitives.
+\newcommand{\deriv}[2]{\tfrac{d #1 }{d #2}}
+\newcommand{\partialderiv}[2]{\tfrac{\partial #1 }{\partial #2}}
+
+%
+% probability stuff.
+%
+\newcommand{\prob}[2][]{\text{\bf Pr}\ifthenelse{\not\equal{}{#1}}{_{#1}}{}\!\left[#2\right]}
+\newcommand{\expect}[2][]{\text{\bf E}\ifthenelse{\not\equal{}{#1}}{_{#1}}{}\!\left[#2\right]}
+\newcommand{\given}{\,\mid\,}
+
+%
+% evaluation macros
+%
+\newcommand{\inteval}[1]{\Big[#1\Big]}
+\newcommand{\evalat}[2]{\left.#1\vphantom{\big|}\right|_{#2}}
+
+
+%
+% random functions of one argument.
+%
+\newcommand{\ceil}[1]{\left\lceil#1\right\rceil}
+\newcommand{\floor}[1]{\left\lfloor#1\right\rfloor}
+\newcommand{\abs}[1]{\left| #1 \right|}
+\newcommand{\setsize}[1]{\left| #1 \right|}
+\newcommand{\norm}[1]{\left\| #1 \right\|}
+\newcommand{\pair}[1]{\left\langle #1 \right\rangle}
+%
+% random functions with no arguments.
+%
+\newcommand{\divides}{\mid}
+
+%
+% Such that is for equations not for text.
+%
+\newcommand{\suchthat}{\ :\ }
+
+
+%
+% quickly define math abreviations for repeated forms. e.g.
+% \mathdef{\PIi}{\pi_i}
+%
+% which allows you to use $x_\PIi$ instead of $x_{\pi_i}$
+%
+\newcommand{\mathdef}[2]{\newcommand{#1}{\ensuremath{#2}}}
+
+%
+% New math operators.  These work like `gcd' or `log'.
+%
+\DeclareMathOperator{\lcm}{lcm}
+\DeclareMathOperator{\img}{img}
+\DeclareMathOperator{\GL}{GL}
+\DeclareMathOperator{\argmax}{argmax}
+\DeclareMathOperator{\argmin}{argmin}
+\DeclareMathOperator{\avg}{avg}
+%\DeclareMathOperator{\det}{det}
+
+
+
+\newcommand{\super}[1]{^{(#1)}}
+
+
+
+%
+% the end
+%

@@ -1,0 +1,126 @@
+\documentclass[12pt]{article}
+
+\renewcommand{\baselinestretch}{1.05}
+\usepackage{amsmath,amsthm,verbatim,amssymb,amsfonts,amscd, graphicx}
+\usepackage{graphics}
+\topmargin0.0cm
+\headheight0.0cm
+\headsep0.0cm
+\oddsidemargin0.0cm
+\textheight23.0cm
+\textwidth16.5cm
+\footskip1.0cm
+\theoremstyle{plain} \newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary} \newtheorem{lemma}{Lemma}
+\newtheorem{proposition}{Proposition}
+\newtheorem*{surfacecor}{Corollary 1}
+\newtheorem{conjecture}{Conjecture} \newtheorem{question}{Question}
+\theoremstyle{definition} \newtheorem{definition}{Definition}
+\usepackage{mathtools} \usepackage{commath}
+\usepackage{bbm}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+
+
+
+\begin{document}
+\title{ECON 512: Computation project}
+\author{Chen Zhang}
+\maketitle
+
+\section{Introduction}
+
+\label{intro}
+
+A lot of econometric problems work well in theory, but they may be
+computational challenging. For example, many models of extremum
+estimators are known to be difficult to compute due to highly
+nonconvex criterion functions with many local optima (but well
+pronounced global optimum), e.g. instruement quantile regression,
+censored and nonlinear quantile regression. In Chernozhukov and Hong
+(2003, JoE) they proposed a class of estimators, quasi-Bayesian
+estimators or Laplace type estimator (LTE), which are defined similar
+to Bayesian estimators and can be computed by MCMC method. This
+estimator is computational attractive, because it transforms the
+optimization problem of extremum estimators to an numerical
+integration problem, which does not suffer to the problem of
+nonconvexity of objective function.
+
+\section{Laplacian or quasi-Bayesian estimator}
+This paper takes advantage of LTE to investigate computation problem
+in censored data. Consider the model
+
+Suppose we have a MLE estimator defined as
+\begin{equation*}
+    \hat{\theta}_{MLE} = \mathrm{arg}\sup_{\theta\in\Theta}L_n(\theta),
+\end{equation*}
+where $L_n(\theta)$ is the log-likelihood function.  To implement
+Bayesian estimation for any prior $\pi(\theta)$, the posterior is
+\begin{equation*}
+    p(\theta |y,x)  =  e^{L_n(\theta)}\pi(\theta),
+\end{equation*}
+where $L_n(\theta)$ is the objective function of maximum likelihood
+estimator, the likelihood function. We can see there is a natural
+connection between maximum likelihood and Bayesian method.
+
+Now, we consider a general extremum estimator problem
+\begin{equation*}
+    \hat{\theta}_{EE} = \mathrm{arg}\sup_{\theta\in\Theta}Q_n(\theta),
+\end{equation*}
+where $Q_n(\theta)$ can be an objective function of any extremum
+estimator.  If $Q_n(\theta) = \frac{1}{n}L_n(\theta)$ is the objective
+function of MLE, for any prior $\pi(\theta)$ we can use
+$e^{nQ_n(\theta)}\pi(\theta)$ as posterior and do Bayesian with no
+effort. If it is not, the transformation
+\begin{equation*}
+    p_n(\theta) = \frac{e^{nQ_{\theta}}\pi(\theta)}{\int_{\Theta}e^{nQ_n\pi(\theta)\mbox{ d}\theta}},
+\end{equation*}
+is a proper distribution density and can be used as posterior, called
+here the \textit{quasi-posterior}. Here $\pi(\theta)$ is a weight
+function or prior probability density that is strictly positive over
+$\Theta$. Note that $p_n(\theta)$ is generally not a true posterior in
+Bayesian sense, since $nQ_n(\theta)$ may not be a likelihood.
+
+The quasi-posterior mean is then defined as
+\begin{equation*}
+    \hat{\theta} = \int_{\Theta} \theta p_n(\theta)\mbox{ d}\theta =  \int_{\Theta} \theta\frac{e^{nQ_n}\pi(\theta)}{\int_{\Theta}e^{nQ_n}\pi(\theta)\mbox{ d}\theta}.
+\end{equation*}
+Follow the spirit of Bayesian, using Markov chain Monte Carlo method,
+we can draw a Markov chain,
+\begin{equation*}
+    S = (\theta^{(1)},\theta^{(2)},...,\theta^{(B)}),
+\end{equation*}
+whose marginal density is given by $p_n(\theta)$. Then the estimate
+$\hat{\theta}$ can be computed as
+\begin{equation*}
+    \hat{\theta} = \frac{1}{B}\sum\limits_{i=1}^B\theta^{(i)}.
+\end{equation*}
+The confidence interval can be constructed based on the quantile of
+$S = (\theta^{(1)},\theta^{(2)},...,\theta^{(B)})$.
+
+\section{Censored median regression}
+\label{sec:censored-model}
+In this section, I will apply the quasi-Bayesian estimator to a
+simulated censored median model and compare it with the extensively
+used iterative linear programming algorithm.
+
+\subsection{The model}
+Consider the model
+\begin{align*}
+  Y_1 = & X\beta_1 +u_1, \\
+  Y_2 = & X\beta_2 +u_2, \\
+  \left( \begin{array}{c} u_1 \\ u_2 \end{array} \right)& \sim  N(0,X_2^2I_2), \\
+  Y^1 \mbox{ is}& \mbox{ observed when } Y^1> Y^2.
+\end{align*}
+We can think of $Y_2$ as an alternative of $Y_1$, $Y_1$ is chosen only if $Y_1>Y_2$. So the data of $Y_1$ will be censored at $Y_2$.
+
+Although in this model the censored point $Y_2$ is not fixed, by assumption we can observe all data of $Y_2$. Therefore, we can get a consistent estimate $\beta_2$ in the first step with no effort, and then obtain the fitted value $\hat{Y}_2$. By the following transformation the model reduced to censored regression with fixed censoring point
+\begin{align*}
+  Y_3 = Y_1 - 
+\end{align*}
+
+
+
+
+\end{document}
