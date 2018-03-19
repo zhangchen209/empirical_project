@@ -1,5 +1,5 @@
 .DS_Store
-theta.mat
+sample*.mat
 matlab.mat
 *.m~
 

@@ -5,14 +5,9 @@ beta = [-6;3;3;3];
 tau = 0.5;
 y_c = 0;
 d = length(beta);
-n = 1600;
+n = 400;
 R = 100;
-seed = randseed(1333,R);
-% edge = [linspace(beta(1)-1.5,beta(1)+1.5,60); ...
-%     linspace(beta(2)-1.5,beta(2)+1.5,30); ...
-%     linspace(beta(3)-1.5,beta(3)+1.5,30); ...
-%     linspace(beta(4)-1.5,beta(4)+1.5,30)];
-nbins = 20;
+seed = randseed(133,R);
 
 
 % generate data
@@ -27,8 +22,6 @@ for i=1:R
     initval(:,i) = (x(:,:,i)'*x(:,:,i))\x(:,:,i)'*y(:,i);
 end
 
-
-
 %% LTE method
 % uniform prior
 prmax = beta+10;
@@ -37,7 +30,7 @@ prmin = beta-10;
 % MCMC run
 burnin_lte = 10000;
 keep_lte = 10000;
-accrate = 0.2;
+accrate = 0.5;
 r_lte = 1;
 theta_lte = zeros(keep_lte,4,R);
 accept = zeros(r_lte,4);
@@ -105,9 +98,9 @@ MAD_ilp_exzero = mad(ilp_exzero);
 mbias_ilp_exzero = median(ilp_exzero) - beta';
 % -----------------------------------------------------------
 
-save sample_1600;
+save sample_400;
 
 histo;
-    
+
 
 

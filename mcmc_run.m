@@ -6,8 +6,6 @@ ehat = y - x*initval;
 n = length(y);
 promu = zeros(4,1);
 prosig = eye(4);
-prosig = chol(prosig);
-ehat_sq  = mean(ehat.^2);
 scale = ones(4,1);
 % cov = scale*ehat_sq^2*(x'*x)^(-1);
 % cov_chol = chol(cov)';
@@ -23,7 +21,7 @@ adjust = accept;
 %% MCMC run
 
 while b<= burnin
-    if mod(b,100)==0
+    if mod(b,200)==0
         for i=1:4
             scale(i) = scale(i)*(1+(accept(i)-adjust(i))/100-acc_rate);
             adjust(i) = accept(i);
@@ -53,7 +51,7 @@ end
 theta(1,:) = curr_theta';
 k = 2;
 while k<= keep
-    if mod(k,100)==0
+    if mod(k,200)==0
         scale(i) = scale(i)*(1+(accept(i)-adjust(i))/100-acc_rate);
         adjust(i) = accept(i);
     end
