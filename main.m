@@ -12,7 +12,7 @@ seed = randseed(1333,R);
 %     linspace(beta(2)-1.5,beta(2)+1.5,30); ...
 %     linspace(beta(3)-1.5,beta(3)+1.5,30); ...
 %     linspace(beta(4)-1.5,beta(4)+1.5,30)];
-nbins = 35;
+nbins = 20;
 
 
 % generate data
@@ -37,7 +37,7 @@ prmin = beta-10;
 % MCMC run
 burnin_lte = 10000;
 keep_lte = 10000;
-accrate = 0.3;
+accrate = 0.2;
 r_lte = 1;
 theta_lte = zeros(keep_lte,4,R);
 accept = zeros(r_lte,4);
@@ -68,16 +68,7 @@ MAD_lte_median = mad(lte_median);
 mbias_lte_median = median(lte_median) - beta';
 % -----------------------------------------------------
 
-f1 = figure('Name','Histogram LTE-mean');
-for i=1:4
-    subplot(2,2,i);
-    histogram(lte_mean(:,i),nbins);
-end
-f2 = figure('Name','Histogram LTE-median');
-for i=1:4
-    subplot(2,2,i);
-    histogram(lte_median(:,i),nbins);
-end
+
 
 
 %% Iterative Linear Programming
@@ -101,16 +92,6 @@ while r_ilp<=R
 end
 ilp_exzero = ilp_est(ilp_est(:,2)~=0,:);
 
-f3 = figure('Name','ILP included zeros');
-for i=1:4
-    subplot(2,2,i);
-    histogram(ilp_est(:,i),nbins);
-end
-f4 = figure('Name','ILP excluded zeros');
-for i=1:4
-    subplot(2,2,i);
-    histogram(ilp_exzero(:,i),nbins);
-end
 
 % ilp estimates ---------------------------------------------
 MSE_ilp_all = var(ilp_est)+(mean(ilp_est)-beta').^2;
@@ -125,8 +106,8 @@ mbias_ilp_exzero = median(ilp_exzero) - beta';
 % -----------------------------------------------------------
 
 save sample_1600;
-    
-    
+
+histo;
     
 
 
