@@ -162,7 +162,7 @@ By this modification, the algorithm can adjust the variance automatically so tha
 To solve a quantile regression problem, linear programming is widely used. But in my example, the censored quantile problem is not linear because of its censored feature, and thus cannot be formulated as linear program. Buchinsky (1994) has proposed a Iterative Linear Programming algorithm (ILP) to solve censored quantile regression. Although this ILP works in many empirical circumstances, there is no guarantee for the convergence of ILP. It also has a serious problem of converging to a local minimum of zero in our example. ILP is described as following steps:
 \begin{enumerate}
     \item Start with some $\hat{\theta}^{(0)}$ for $j=0$.
-    \item Compute $X\hat{\theta}^{(j)}$ and collect the subsample $S_j = \{ i: x_i^{'}\hat{\theta}^{(j)}\leq Y_i$.
+    \item Compute $X\hat{\theta}^{(j)}$ and collect the subsample $S_j = \{ i: x_i^{'}\hat{\theta}^{(j)}\geq 0$.
     \item Use only subsample $S_j$, run the standard quantile regression with linear programming. With new $\hat{\theta}^{(j+1)}$, compute $S_{j+1}$.
     \item If $S_{j+1} = S_j$, then stop and set estimate to $\hat{\theta}^{(j+1)}$. Otherwise, set $j=j+1$ and repeat step.3.
 \end{enumerate}

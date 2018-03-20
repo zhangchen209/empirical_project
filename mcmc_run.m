@@ -5,7 +5,7 @@ theta = zeros(keep,4);
 ehat = y - x*initval;
 n = length(y);
 promu = zeros(4,1);
-prosig = eye(4);
+prosig = ones(4,1);
 scale = ones(4,1);
 % cov = scale*ehat_sq^2*(x'*x)^(-1);
 % cov_chol = chol(cov)';
@@ -27,7 +27,7 @@ while b<= burnin
             adjust(i) = accept(i);
         end
     end
-    e = randn(4,1);
+    e = normrnd(promu,prosig);
     e = scale.*e;
     
     for i = 1:4
@@ -55,7 +55,7 @@ while k<= keep
         scale(i) = scale(i)*(1+(accept(i)-adjust(i))/100-acc_rate);
         adjust(i) = accept(i);
     end
-    e = randn(4,1);
+    e = normrnd(promu,prosig);
     e = scale(i)*e;
     for i=1:4
         propose(i) = curr_theta(i)' + e(i);

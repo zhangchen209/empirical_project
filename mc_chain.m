@@ -1,10 +1,10 @@
 %% MC chain
-
-plot(theta_lte(:,2,50))
-for i=1:4
-    subplot(4,1,i)
-    plot(theta_lte((end-999):end,i,50));
-end
+hold on
+plot(theta_lte(:,4,50))
+% for i=1:4
+%     subplot(4,1,i)
+%     plot(theta_lte((end-999):end,i,50));
+% end
 
 figure
 [b1,b2] = meshgrid(linspace(2.95,3.05,100),linspace(2.95,3.05,100));
@@ -17,6 +17,6 @@ for i = 1:length(b1)
     end;
 end;
 surf(b1,b2,simpost)
-xlabel('Slope')
-ylabel('Intercept')
-zlabel('Posterior density')
+xlabel('\theta_2')
+ylabel('\theta_3')
+zlabel('objective function')

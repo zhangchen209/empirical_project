@@ -5,7 +5,7 @@ beta = [-6;3;3;3];
 tau = 0.5;
 y_c = 0;
 d = length(beta);
-n = 400;
+n = 1600;
 R = 100;
 seed = randseed(133,R);
 
@@ -98,9 +98,7 @@ MAD_ilp_exzero = mad(ilp_exzero);
 mbias_ilp_exzero = median(ilp_exzero) - beta';
 % -----------------------------------------------------------
 
-save sample_400;
-
-histo;
+kk = 10:10:10000;
 
 
 
