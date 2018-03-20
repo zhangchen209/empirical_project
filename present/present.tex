@@ -118,21 +118,23 @@ Extremum estimator with nonsmooth objective function has nice theoretic asymptot
 \begin{frame}{Performance of QBE and ILP}
     \begin{table}
         \centering
-        \begin{tabular}{llll}
+        \begin{tabular}{lrrr}
           \hline
-                     & RMSE   & MAD    & mean bias \\ \hline
-          n = 400    &        &        &  \\
-          QBE-mean   & 1.9882 & 0.5445 & 0.5651    \\
-          QBE-median & 1.6338 & 0.4796 & 0.4120    \\
-          ILP (18)   & 0.9424 & 0.2867 & 0.0345    \\
-                     & 3.1080 & 0.9505 & 0.0845    \\ \hline
-          n = 1600   &        &        &  \\
-          QBE-mean   & 0.3067 & 0.1051 & 0.0933    \\
-          QBE-median & 0.2913 & 0.1004 & 0.0717    \\
-          ILP (11)   & 0.2236 & 0.0742 & 0.0071    \\
-                     & 2.6528 & 0.7371 & 0.0234    \\ \hline
+                     & RMSE   & MAD  & Median bias \\ \hline
+          n = 1600   &       &       &  \\
+          QBE-mean   & 0.307 & 0.105 & -0.006     \\
+          QBE-median & 0.291 & 0.100 & -0.005    \\
+          ILP (11)   & 0.227 & 0.074 &  0.006    \\
+                     & 2.653 & 0.737 &  0.005    \\
+          \hline
+          CH(2003)   &       &       &  \\
+          QBE-mean   & 0.155 & 0.121 &  0.009    \\
+          QBE-median & 0.155 & 0.121 &  0.002    \\
+          ILP (7)    & 0.134 & 0.106 &  0.067    \\
+                     & 3.547 & 0.511 & -0.384    \\
+          \hline
         \end{tabular}
-        \caption{ex}
+        \caption{Performance of estimators}
     \end{table}
 \end{frame}
 
