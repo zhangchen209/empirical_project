@@ -52,11 +52,11 @@ Extremum estimator with nonsmooth objective function has nice theoretic asymptot
 
     If the extremum estimator is MLE
     \begin{equation*}
-        \hat{\theta}_{MLE} = \arg\max_{\theta\in\Theta}L_n(Y_i,X_i,\theta), 
+        \hat{\theta}_{MLE} = \arg\max_{\theta\in\Theta}L_n(Y,X,\theta), 
     \end{equation*}
-    where $L_n$ is log-likelihood. We can do MCMC use $e^{L_n(Y_i,X_i,\theta)}$ as posterior.
+    where $L_n$ is log-likelihood. We can do MCMC use $e^{L_n(Y,X,\theta)}$ as posterior.
 \begin{block}{Quasi-posterior}
-    \begin{equation*} p_n(Y_i,X_i,\theta)=\frac{e^{nQ_n(Y_i,X_i,\theta)}\pi(Y_i,X_i,\theta)}{\int_{\Theta}e^{nQ_n(Y_i,X_i,\theta)}\pi(Y_i,X_i,\theta)\mbox{ d}\theta }.
+    \begin{equation*} p_n(Y,X,\theta)=\frac{e^{nQ_n(Y,X,\theta)}\pi(Y,X,\theta)}{\int_{\Theta}e^{nQ_n(Y,X,\theta)}\pi(Y,X,\theta)\mbox{ d}\theta }.
     \end{equation*}
     By this definition, $p_n(\theta)$ is a proper posterior.
 \end{block}
@@ -106,7 +106,7 @@ Extremum estimator with nonsmooth objective function has nice theoretic asymptot
 \begin{frame}{Quasi-Bayesian method}
     Choose prior uniform over $\Theta = [\theta_0-10,\theta_0+10]$, use
     \begin{equation*}
-        p_n(Y_i,X_i,\theta)=\frac{e^{nQ_n(Y_i,X_i,\theta)}\pi(Y_i,X_i,\theta)}{\int_{\Theta}e^{nQ_n(Y_i,X_i,\theta)}\pi(Y_i,X_i,\theta)\mbox{ d}\theta }
+        p_n(Y,X,\theta)=\frac{e^{nQ_n(Y,X,\theta)}\pi(Y,X,\theta)}{\int_{\Theta}e^{nQ_n(Y,X,\theta)}\pi(Y,X,\theta)\mbox{ d}\theta }
     \end{equation*}
     as posterior, run MCMC.
 
