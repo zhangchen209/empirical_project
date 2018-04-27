@@ -1,6 +1,6 @@
 \documentclass[12pt]{article}
 
-\renewcommand{\baselinestretch}{1.05}
+
 \usepackage{amsmath,amsthm,verbatim,amssymb,amsfonts,amscd, graphicx}
 \usepackage{graphics}
 \topmargin0.0cm
@@ -20,6 +20,8 @@
 \usepackage{bbm}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{natbib}
+\renewcommand{\baselinestretch}{1.5}
 
 
 
@@ -135,6 +137,8 @@ To estimate the median of the above model, the estimator is based on Powell's ob
 \begin{equation*}
     \hat{\theta}_{EE} = \mathrm{arg}\max_{\theta\in\Theta} Q_n(\theta).
 \end{equation*}
+
+
 The MCMC run is based on the quasi-posterior
 \begin{equation*}
     p_n(\theta) = \frac{e^{nQ_{\theta}}\pi(\theta)}{\int_{\Theta}e^{nQ_n\pi(\theta)\mbox{ d}\theta}}.
@@ -143,9 +147,18 @@ The MCMC run is based on the quasi-posterior
 \section{Computation and issues}
 \label{sec:computation-issues}
 
+Figure.1 is the surface of the objective function, it illustrates the computation difficulty for the optimization problem. We can see the surface of the objective function is featured by many flat area, which makes it hard to search for the maxima. Linear programming is usually been used to solve this maximization problem, I will illustrate some issues in using linear program in next section. Our quasi-bayesian estimator is an alternative to the extremum estimator solved by linear programming.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{figures/mesh.eps}
+    \caption{Surface of objective function}
+    \label{fig:lte-mean}
+\end{figure}
+
 \subsection{quasi-Bayesian method}
 The MCMC step is based on Metroplis-Hastings random walk algorithm with some modification. The prior $\pi(\theta)$ is chosen uniformly over $[\theta-10, \theta+10]$.
-The first issue I encountered is adjust the variance of the simulated Markov chain. Because each element of parametrer $\theta$ has different scale (in my example, $\theta_0$ is as twice large as $\theta_1,\theta_2,\theta_3$), if the updating is based on the same distribution over all the parameter, it may result in a very large MSE on some component of the estimator.
+The first issue encountered is adjusting the variance of the simulated Markov chain. Because each element of parametrer $\theta$ has different scale (in my example, $\theta_0$ is as twice large as $\theta_1,\theta_2,\theta_3$), if the updating is based on the same distribution over all the parameter, it may result in a very large MSE on some component of the estimator.
 
 It is known that if the variance of proposed update is too large, it will have a low acceptance rate; if the variance is too small, it will have a low acceptance rate. I tried to adjust the proposed random walk innovation on each component separately, so that the variance is adjusted according to acceptance rate.
 
@@ -159,65 +172,68 @@ By this modification, the algorithm can adjust the variance automatically so tha
 \subsection{Iterative Linear Programming}
 \label{sec:iter-line-progr}
 
-To solve a quantile regression problem, linear programming is widely used. But in my example, the censored quantile problem is not linear because of its censored feature, and thus cannot be formulated as linear program. Buchinsky (1994) has proposed a Iterative Linear Programming algorithm (ILP) to solve censored quantile regression. Although this ILP works in many empirical circumstances, there is no guarantee for the convergence of ILP. It also has a serious problem of converging to a local minimum of zero in our example. ILP is described as following steps:
+Linear programming is widely used to solve a quantile regression problem. But in my example, the censored quantile problem is not linear because of its censored feature, and thus cannot be formulated as linear program. Buchinsky(1994) has proposed a Iterative Linear Programming algorithm (ILP) to solve censored quantile regression. Although this ILP works in many empirical circumstances, there is no guarantee for the convergence of ILP. It also has a serious problem of converging to a local minimum of zero in our example. ILP is described as following steps:
 \begin{enumerate}
     \item Start with some $\hat{\theta}^{(0)}$ for $j=0$.
     \item Compute $X\hat{\theta}^{(j)}$ and collect the subsample $S_j = \{ i: x_i^{'}\hat{\theta}^{(j)}\geq 0$.
     \item Use only subsample $S_j$, run the standard quantile regression with linear programming. With new $\hat{\theta}^{(j+1)}$, compute $S_{j+1}$.
     \item If $S_{j+1} = S_j$, then stop and set estimate to $\hat{\theta}^{(j+1)}$. Otherwise, set $j=j+1$ and repeat step.3.
 \end{enumerate}
-In some cases, the ILP doesn't converge. More worse, because its convergent criterion is based on the subsample $S_{j+1}=S_j$, the subsample $S_j$ may update to a very different one if the sample is featured by a large censoring. Therefore, simply setting a maximum iteration is not a good idea. In my example, observing that although the subsample does not converge but it always alter within some subset of full sample. For example, with sample size 400, $S_j$ will first converge to some subsample of size 32 or 30 and then altered between these subsamples. The estimator ranges within deviation of 1. My solution is first run a burn in sequence, then average the estimate in a keep sequence. Since not converging only happen in some rare cases and deviation is acceptable, this will not affect the overall performance of the estimator in a large repetition.
+In some cases, the ILP doesn't converge. More worse, because its convergent criterion is based on the subsample $S_{j+1}=S_j$, the subsample $S_j$ may update to a very different one if the sample is featured by a large censoring. Therefore, simply setting a maximum iteration $maxit$ and take the estimate $\hat{\beta}^{(maxit)}$ may lead to a local minum that is far away from the global one. In my simulation example, I oberved that although the subsample does not converge but it always alters within a small number of subsets of full sample. For example, with sample size 400, $S_j$ will first converge to some subsample of size 32 or 30 and then altered between these subsamples. Although the estimate does not converge, it ranges within deviation of 1. To fix this problem, I first run a burn in sequence, then average the estimate in a keep sequence. Since not converging only happens in some rare cases and deviation is acceptable, this will not affect the overall performance of the estimator in a large repetition.
 
-Another more serious and more common issue of ILP is that it sometimes converge to a local minimum of 0. It will be reported in the result of next section.
+Another serious and more common issue of ILP is that it sometimes converge to a local minimum of 0, it will be reported in the result of next section.
 
 \section{Result}
 \label{sec:result}
 
 The result is based on sample size of 400 and 100 repetition.
-\begin{table}[h]
-\centering
-\caption{My caption}
-\label{my-label}
-\begin{tabular}{llll}
-\hline
-           & RMSE   & MAD    & mean bias \\ \hline
-LTE-mean   & 1.6104 & 0.8443 & 0.6079    \\ \hline
-LTE-median & 1.5741 & 0.8353 & 0.5180    \\ \hline
-ILPA (18)  & 3.4883 & 2.4118 & 0.1062    \\ \hline
-           & 0.9455 & 0.6246 & 0.0814    \\ \hline
-\end{tabular}
+
+\begin{table}[H]
+        \centering
+        \begin{tabular}{lrrr}
+          \hline
+                     & RMSE   & MAD  & Median bias \\ \hline
+          n = 1600   &       &       &  \\
+          QBE-mean   & 0.307 & 0.105 & -0.006     \\
+          QBE-median & 0.291 & 0.100 & -0.005    \\
+          ILP (11)   & 0.227 & 0.074 &  0.006    \\
+                     & 2.653 & 0.737 &  0.005    \\
+          \hline
+          CH(2003)   &       &       &  \\
+          QBE-mean   & 0.155 & 0.121 &  0.009    \\
+          QBE-median & 0.155 & 0.121 &  0.002    \\
+          ILP (7)    & 0.134 & 0.106 &  0.067    \\
+                     & 3.547 & 0.511 & -0.384    \\
+          \hline
+        \end{tabular}
+        \caption{Performance of estimators}
 \end{table}
 
-The number in the parentheses in the ILP result is the times that ILP converge to a local min of 0. The first row for the ILP reports the performance of the algorithm among the subset of simulations for which ILP does not converge to a local minimum at 0. The second row reports the results for all simulations, including those for which ILP converge to 0. The LTEs never converge to 0. We can see, when the local minima are excluded ILP performs slightly better than LTEs. But when the local minima are included in the ILP results, LTEs did much better. The following are the histogram of simulation results.
+The number in the parentheses in the ILP result is the times that ILP converge to a local minimum of 0. The first row for the ILP reports the performance of the algorithm among the subset of simulations for which ILP does not converge to a local minimum at 0. The second row reports the results for all simulations, including those for which ILP converges to 0. The LTEs never converge to 0. We can see, when the local minima are excluded ILP performs slightly better than LTEs. But when the local minima are included in the ILP results, LTEs did much better. The following are the histogram of simulation results.
 
-\begin{figure}[hp]
+
+\begin{figure}[h]
     \centering
     \includegraphics[width=1.2\textwidth]{figures/lte-mean.eps}
-    \caption{quasi-posterior mean}
+    \includegraphics[width=1.2\textwidth]{figures/lte-median.eps}
+    \includegraphics[width=1.2\textwidth]{figures/ilp-allrep.eps}
+    \includegraphics[width=1.2\textwidth]{figures/ilp-exzero.eps}
+    \caption{The histograms in each row are for quasi-posterior mean, quasi-posterior median, ILP and ILP exclude local minimum of zero. Each of the four rows are for the four components of the parameter $\beta$.}
     \label{fig:lte-mean}
 \end{figure}
 
-\begin{figure}[hp]
-    \centering
-    \includegraphics[width=1.2\textwidth]{figures/lte-median.eps}
-    \caption{quasi-posterior median}
-    \label{fig:lte-median}
-\end{figure}
 
-\begin{figure}[hp]
-    \centering
-    \includegraphics[width=1.2\textwidth]{figures/ilp-allrep.eps}
-    \caption{ILP}
-    \label{fig:ilp-allrep}
-\end{figure}
+\clearpage
 
-\begin{figure}[hp]
-    \centering
-    \includegraphics[width=1.2\textwidth]{figures/ilp-exzero.eps}
-    \caption{ILP exclude local minimum of zero}
-    \label{fig:ilp-exzero}
-\end{figure}
+\nocite{*}
+\bibliography{empiricalref}
+\bibliographystyle{chicago}
 
+
+\clearpage
+
+\section*{Appendix A. Placeholder} \label{sec:appendixa}
+\addcontentsline{toc}{section}{Appendix A}
 
 
 \end{document}
