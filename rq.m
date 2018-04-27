@@ -7,8 +7,6 @@
 
 
 
-
-
 function b = rq_fnm(X, y, p)
 % Construct the dual problem of quantile regression
 % Solve it with lp_fnm

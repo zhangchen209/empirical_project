@@ -22,7 +22,8 @@
 \usepackage[T1]{fontenc}
 \usepackage{natbib}
 \renewcommand{\baselinestretch}{1.5}
-
+\usepackage{bigfoot} % to allow verbatim in footnote
+\usepackage[numbered,framed]{matlab-prettifier}
 
 
 
@@ -30,6 +31,8 @@
 \title{ECON 512: Computation project}
 \author{Chen Zhang}
 \maketitle
+
+
 
 \section{Introduction}
 
@@ -116,20 +119,31 @@ Consider the model
   \left( \begin{array}{c} u_1 \\ u_2 \end{array} \right)& \sim  N(0,\Sigma), \\
   Y^1 \mbox{ is}& \mbox{ observed when } Y^1> Y^2.
 \end{align*}
-We can think of $Y_2$ as an alternative of $Y_1$, $Y_1$ is chosen only if $Y_1>Y_2$. So the data of $Y_1$ will be censored at $Y_2$.
+We can think of $Y_2$ as an alternative of $Y_1$, $Y_1$ is chosen only
+if $Y_1>Y_2$. So the data of $Y_1$ will be censored at $Y_2$.
 
-Since the focus of this paper is on the computational aspect of solving censored model, I simplified the model by assuming that there's no endogeneity and it can be easily transformed to a simple censored model by the following steps. First consider the transformation
+Since the focus of this paper is on the computational aspect of
+solving censored model, I simplified the model by assuming that
+there's no endogeneity and it can be easily transformed to a simple
+censored model by the following steps. First consider the
+transformation
 \begin{align*}
   Y_3 = & Y_1 -Y_2 \\
   = & (\alpha_1 - \alpha_2) + X(\beta_1 - \beta_2) +(u_1 - u_2) \\
   = & \theta_0 + X\theta + \varepsilon,
 \end{align*}
-where $\theta = \beta_1 - \beta_2$, $\varepsilon = u_1 -u_2$. Although in this model the censored point $Y_2$ is not fixed, by assumption we can observe full data of $Y_2$. Therefore, we can get a consistent estimate $\beta_2$ in the first step with no effort. Then plug this consistent estimator $\hat{\beta}_2$ into the above transformation and get the following simple censored model
+where $\theta = \beta_1 - \beta_2$, $\varepsilon = u_1 -u_2$. Although
+in this model the censored point $Y_2$ is not fixed, by assumption we
+can observe full data of $Y_2$. Therefore, we can get a consistent
+estimate $\beta_2$ in the first step with no effort. Then plug this
+consistent estimator $\hat{\beta}_2$ into the above transformation and
+get the following simple censored model
 \begin{align*}
   Y^{*} = & \theta_0 + X\theta + \varepsilon, \\ 
   X\sim N&(0,I_3), \quad \varepsilon \sim  N(0,X_2^2I), \quad  Y =  \max(0,Y^{*}).
 \end{align*}
-I used $\theta_0 = -6$, $\theta = (3,3,3)'$ to generate the data, which generates about 80\% censoring.
+I used $\theta_0 = -6$, $\theta = (3,3,3)'$ to generate the data,
+which generates about 80\% censoring.
 
 \subsection{Estimation}
 \label{sec:estimation}
@@ -153,7 +167,6 @@ Figure.1 is the surface of the objective function, it illustrates the computatio
     \centering
     \includegraphics[width=0.9\textwidth]{figures/mesh.eps}
     \caption{Surface of objective function}
-    \label{fig:lte-mean}
 \end{figure}
 
 \subsection{quasi-Bayesian method}
@@ -188,28 +201,36 @@ Another serious and more common issue of ILP is that it sometimes converge to a 
 
 The result is based on sample size of 400 and 100 repetition.
 
-\begin{table}[H]
-        \centering
-        \begin{tabular}{lrrr}
-          \hline
-                     & RMSE   & MAD  & Median bias \\ \hline
-          n = 1600   &       &       &  \\
-          QBE-mean   & 0.307 & 0.105 & -0.006     \\
-          QBE-median & 0.291 & 0.100 & -0.005    \\
-          ILP (11)   & 0.227 & 0.074 &  0.006    \\
-                     & 2.653 & 0.737 &  0.005    \\
-          \hline
-          CH(2003)   &       &       &  \\
-          QBE-mean   & 0.155 & 0.121 &  0.009    \\
-          QBE-median & 0.155 & 0.121 &  0.002    \\
-          ILP (7)    & 0.134 & 0.106 &  0.067    \\
-                     & 3.547 & 0.511 & -0.384    \\
-          \hline
-        \end{tabular}
-        \caption{Performance of estimators}
+\begin{table}[h]
+    \centering
+    \begin{tabular}{lrrr}
+      \hline
+      & RMSE   & MAD  & Median bias \\ \hline
+      n = 1600   &       &       &  \\
+      QBE-mean   & 0.307 & 0.105 & -0.006     \\
+      QBE-median & 0.291 & 0.100 & -0.005    \\
+      ILP (11)   & 0.227 & 0.074 &  0.006    \\
+      & 2.653 & 0.737 &  0.005    \\
+      \hline
+      CH(2003)   &       &       &  \\
+      QBE-mean   & 0.155 & 0.121 &  0.009    \\
+      QBE-median & 0.155 & 0.121 &  0.002    \\
+      ILP (7)    & 0.134 & 0.106 &  0.067    \\
+      & 3.547 & 0.511 & -0.384    \\
+      \hline
+    \end{tabular}
+    \caption{Performance of estimators}
 \end{table}
 
-The number in the parentheses in the ILP result is the times that ILP converge to a local minimum of 0. The first row for the ILP reports the performance of the algorithm among the subset of simulations for which ILP does not converge to a local minimum at 0. The second row reports the results for all simulations, including those for which ILP converges to 0. The LTEs never converge to 0. We can see, when the local minima are excluded ILP performs slightly better than LTEs. But when the local minima are included in the ILP results, LTEs did much better. The following are the histogram of simulation results.
+The number in the parentheses in the ILP result is the times that ILP
+converge to a local minimum of 0. The first row for the ILP reports
+the performance of the algorithm among the subset of simulations for
+which ILP does not converge to a local minimum at 0. The second row
+reports athe results for all simulations, including those for which ILP
+converges to 0. The LTEs never converge to 0. We can see, when the
+local minima are excluded ILP performs slightly better than LTEs. But
+when the local minima are included in the ILP results, LTEs did much
+better. Figure.2 is the histogram of simulation results.
 
 
 \begin{figure}[h]
@@ -218,7 +239,10 @@ The number in the parentheses in the ILP result is the times that ILP converge t
     \includegraphics[width=1.2\textwidth]{figures/lte-median.eps}
     \includegraphics[width=1.2\textwidth]{figures/ilp-allrep.eps}
     \includegraphics[width=1.2\textwidth]{figures/ilp-exzero.eps}
-    \caption{The histograms in each row are for quasi-posterior mean, quasi-posterior median, ILP and ILP exclude local minimum of zero. Each of the four rows are for the four components of the parameter $\beta$.}
+    \caption{The histograms in each row are for quasi-posterior mean,
+      quasi-posterior median, ILP and ILP exclude local minimum of
+      zero. Each of the four rows are for the four components of the
+      parameter $\beta$.}
     \label{fig:lte-mean}
 \end{figure}
 
@@ -232,8 +256,40 @@ The number in the parentheses in the ILP result is the times that ILP converge t
 
 \clearpage
 
-\section*{Appendix A. Placeholder} \label{sec:appendixa}
-\addcontentsline{toc}{section}{Appendix A}
+\section*{Appendix A. Schematics of Code}
+\label{sec:appendixa}
+Except for main.m, the code contains the following routines and functions,
+
+\begin{enumerate}
+    \item \texttt{cqr\_ilp.m} is the function that used to compute censored quantile regression by Iterative Linear Programming. Input is (independent var, dependent var, censored point, quantile, initial value, number of burn in iterations, numbers of iterations that are kept). Output is (estimate, keep sequence, whether converge to a local minimum).
+    \item \texttt{dgp.m} is the data generating process function of the simulated model. Input is (sample size, true parameter, random seed).
+    \item \texttt{histo.m} is the subroutine that plots histograms of the estimation results.
+    \item \texttt{mc\_chain.m} is the subroutine used to plot the simulated Markov Chain in quasi-Bayesian method. And also plot the surface of objective function.
+    \item \texttt{mcmc\_run.m} is the function run the MCMC procedure. Input is (dependent var, independent var, initial var, quantile, length of burn in sequence, length of keep sequence, preset acceptance rate,random seed). Output is (estimate, number of times accepted).
+    \item \texttt{obj.m} is objective function of censored quantile model. Input is (dependent var, independent var, parameter, quantile).
+    \item \texttt{rq.m} is the quantile regression solver provided online by Roger Koenker.
+\end{enumerate}
+
+\clearpage
+\renewcommand{\baselinestretch}{1}
+\section*{Appendix B. Matlab Code}
+\textbf{main.m}
+\lstinputlisting[style=Matlab-editor]{code/main.m}
+\textbf{cqr\_ilp.m}
+\lstinputlisting[style=Matlab-editor]{code/cqr_ilp.m}
+\textbf{dgp.m}
+\lstinputlisting[style=Matlab-editor]{code/dgp.m}
+\textbf{histo.m}
+\lstinputlisting[style=Matlab-editor]{code/histo.m}
+\textbf{mc\_chain.m}
+\lstinputlisting[style=Matlab-editor]{code/mc_chain.m}
+\textbf{mcmc\_run.m}
+\lstinputlisting[style=Matlab-editor]{code/mcmc_run.m}
+\textbf{obj.m}
+\lstinputlisting[style=Matlab-editor]{code/obj.m}
+\textbf{rq.m}
+\lstinputlisting[style=Matlab-editor]{code/rq.m}
+
 
 
 \end{document}
