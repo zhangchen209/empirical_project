@@ -226,11 +226,14 @@ The number in the parentheses in the ILP result is the times that ILP
 converge to a local minimum of 0. The first row for the ILP reports
 the performance of the algorithm among the subset of simulations for
 which ILP does not converge to a local minimum at 0. The second row
-reports athe results for all simulations, including those for which ILP
-converges to 0. The LTEs never converge to 0. We can see, when the
+reports athe results for all simulations, including those for which
+ILP converges to 0. The LTE never converge to 0. We can see, when the
 local minima are excluded ILP performs slightly better than LTEs. But
 when the local minima are included in the ILP results, LTEs did much
-better. Figure.2 is the histogram of simulation results.
+better. We can see LTE is a more robust alternative to ILP in this simulated exercise. Indeed, not only
+in the censored model, LTE should work more robust in any setting that convergence of computing
+extremum estimators could be a problem. Figure.2 shows the
+histograms of simulation with 400 repetitions.
 
 
 \begin{figure}[h]
@@ -241,17 +244,15 @@ better. Figure.2 is the histogram of simulation results.
     \includegraphics[width=1.2\textwidth]{figures/ilp-exzero.eps}
     \caption{The histograms in each row are for quasi-posterior mean,
       quasi-posterior median, ILP and ILP exclude local minimum of
-      zero. Each of the four rows are for the four components of the
-      parameter $\beta$.}
+      zero, respectively. Each row contains histograms of four
+      components of the estimator $\beta$.}
     \label{fig:lte-mean}
 \end{figure}
 
 
 \clearpage
 
-\nocite{*}
-\bibliography{empiricalref}
-\bibliographystyle{chicago}
+\nocite{*} \bibliography{empiricalref} \bibliographystyle{chicago}
 
 
 \clearpage
